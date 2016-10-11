@@ -15,6 +15,6 @@
  */
 
 /**
- * Default impl for SqlSession.
+ * TODO fillme.
  */
 package org.apache.ibatis.session.defaults;

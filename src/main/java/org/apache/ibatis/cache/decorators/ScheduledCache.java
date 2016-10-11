@@ -1,5 +1,5 @@
 /*
- *    Copyright 2009-2014 the original author or authors.
+ *    Copyright 2009-2012 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -19,9 +19,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 
 import org.apache.ibatis.cache.Cache;
 
-/**
- * @author Clinton Begin
- */
 public class ScheduledCache implements Cache {
 
   private Cache delegate;
@@ -38,24 +35,20 @@ public class ScheduledCache implements Cache {
     this.clearInterval = clearInterval;
   }
 
-  @Override
   public String getId() {
     return delegate.getId();
   }
 
-  @Override
   public int getSize() {
     clearWhenStale();
     return delegate.getSize();
   }
 
-  @Override
   public void putObject(Object key, Object object) {
     clearWhenStale();
     delegate.putObject(key, object);
   }
 
-  @Override
   public Object getObject(Object key) {
     if (clearWhenStale()) {
       return null;
@@ -64,29 +57,24 @@ public class ScheduledCache implements Cache {
     }
   }
 
-  @Override
   public Object removeObject(Object key) {
     clearWhenStale();
     return delegate.removeObject(key);
   }
 
-  @Override
   public void clear() {
     lastClear = System.currentTimeMillis();
     delegate.clear();
   }
 
-  @Override
   public ReadWriteLock getReadWriteLock() {
-    return null;
+    return delegate.getReadWriteLock();
   }
 
-  @Override
   public int hashCode() {
     return delegate.hashCode();
   }
 
-  @Override
   public boolean equals(Object obj) {
     return delegate.equals(obj);
   }

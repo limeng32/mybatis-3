@@ -1,5 +1,5 @@
 /*
- *    Copyright 2009-2014 the original author or authors.
+ *    Copyright 2009-2013 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -42,15 +42,11 @@ import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.transaction.Transaction;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
-/**
- * @author Clinton Begin
- */
 public abstract class BaseExecutor implements Executor {
 
   private static final Log log = LogFactory.getLog(BaseExecutor.class);
 
   protected Transaction transaction;
-  protected Executor wrapper;
 
   protected ConcurrentLinkedQueue<DeferredLoad> deferredLoads;
   protected PerpetualCache localCache;
@@ -67,7 +63,6 @@ public abstract class BaseExecutor implements Executor {
     this.localOutputParameterCache = new PerpetualCache("LocalOutputParameterCache");
     this.closed = false;
     this.configuration = configuration;
-    this.wrapper = this;
   }
 
   public Transaction getTransaction() {
@@ -169,28 +164,24 @@ public abstract class BaseExecutor implements Executor {
     cacheKey.update(rowBounds.getLimit());
     cacheKey.update(boundSql.getSql());
     List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
-    TypeHandlerRegistry typeHandlerRegistry = ms.getConfiguration().getTypeHandlerRegistry();
-    for (int i = 0; i < parameterMappings.size(); i++) { // mimic DefaultParameterHandler logic
-      ParameterMapping parameterMapping = parameterMappings.get(i);
-      if (parameterMapping.getMode() != ParameterMode.OUT) {
-        Object value;
-        String propertyName = parameterMapping.getProperty();
-        if (boundSql.hasAdditionalParameter(propertyName)) {
-          value = boundSql.getAdditionalParameter(propertyName);
-        } else if (parameterObject == null) {
-          value = null;
-        } else if (typeHandlerRegistry.hasTypeHandler(parameterObject.getClass())) {
-          value = parameterObject;
-        } else {
-          MetaObject metaObject = configuration.newMetaObject(parameterObject);
-          value = metaObject.getValue(propertyName);
+    if (parameterMappings.size() > 0 && parameterObject != null) {
+      TypeHandlerRegistry typeHandlerRegistry = ms.getConfiguration().getTypeHandlerRegistry();
+      if (typeHandlerRegistry.hasTypeHandler(parameterObject.getClass())) {
+        cacheKey.update(parameterObject);
+      } else {
+        MetaObject metaObject = configuration.newMetaObject(parameterObject);
+        for (ParameterMapping parameterMapping : parameterMappings) {
+          String propertyName = parameterMapping.getProperty();
+          if (metaObject.hasGetter(propertyName)) {
+            cacheKey.update(metaObject.getValue(propertyName));
+          } else if (boundSql.hasAdditionalParameter(propertyName)) {
+            cacheKey.update(boundSql.getAdditionalParameter(propertyName));
+          }
         }
-        cacheKey.update(value);
       }
     }
-    if (configuration.getEnvironment() != null) cacheKey.update(configuration.getEnvironment().getId()); //issue #176
     return cacheKey;
-  }    
+  }
 
   public boolean isCached(MappedStatement ms, CacheKey key) {
     return localCache.getObject(key) != null;
@@ -279,16 +270,12 @@ public abstract class BaseExecutor implements Executor {
   protected Connection getConnection(Log statementLog) throws SQLException {
     Connection connection = transaction.getConnection();
     if (statementLog.isDebugEnabled()) {
-      return ConnectionLogger.newInstance(connection, statementLog, queryStack);
+      return ConnectionLogger.newInstance(connection, statementLog);
     } else {
       return connection;
     }
   }
-  
-  public void setExecutorWrapper(Executor wrapper) {
-    this.wrapper = wrapper;
-  }
-  
+
   private static class DeferredLoad {
 
     private final MetaObject resultObject;

@@ -15,6 +15,6 @@
  */
 
 /**
- * Parses annotions to create a Configuration
+ * TODO fillme.
  */
 package org.apache.ibatis.builder.annotation;

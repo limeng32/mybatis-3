@@ -22,9 +22,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-/**
- * @author Clinton Begin
- */
 public class NClobTypeHandler extends BaseTypeHandler<String> {
 
   @Override

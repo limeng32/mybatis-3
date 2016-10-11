@@ -21,9 +21,6 @@ import org.apache.ibatis.parsing.GenericTokenParser;
 import org.apache.ibatis.parsing.TokenHandler;
 import org.apache.ibatis.session.Configuration;
 
-/**
- * @author Clinton Begin
- */
 public class ForEachSqlNode implements SqlNode {
   public static final String ITEM_PREFIX = "__frch_";
 
@@ -52,9 +49,6 @@ public class ForEachSqlNode implements SqlNode {
   public boolean apply(DynamicContext context) {
     Map<String, Object> bindings = context.getBindings();
     final Iterable<?> iterable = evaluator.evaluateIterable(collectionExpression, bindings);
-    if (!iterable.iterator().hasNext()) {
-      return true;
-    }
     boolean first = true;
     applyOpen(context);
     int i = 0;

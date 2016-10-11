@@ -1,5 +1,5 @@
 /*
- *    Copyright 2009-2014 the original author or authors.
+ *    Copyright 2009-2012 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -29,9 +29,6 @@ import org.apache.ibatis.cache.Cache;
 import org.apache.ibatis.cache.CacheException;
 import org.apache.ibatis.io.Resources;
 
-/**
- * @author Clinton Begin
- */
 public class SerializedCache implements Cache {
 
   private Cache delegate;
@@ -40,17 +37,14 @@ public class SerializedCache implements Cache {
     this.delegate = delegate;
   }
 
-  @Override
   public String getId() {
     return delegate.getId();
   }
 
-  @Override
   public int getSize() {
     return delegate.getSize();
   }
 
-  @Override
   public void putObject(Object key, Object object) {
     if (object == null || object instanceof Serializable) {
       delegate.putObject(key, serialize((Serializable) object));
@@ -59,33 +53,27 @@ public class SerializedCache implements Cache {
     }
   }
 
-  @Override
   public Object getObject(Object key) {
     Object object = delegate.getObject(key);
     return object == null ? null : deserialize((byte[]) object);
   }
 
-  @Override
   public Object removeObject(Object key) {
     return delegate.removeObject(key);
   }
 
-  @Override
   public void clear() {
     delegate.clear();
   }
 
-  @Override
   public ReadWriteLock getReadWriteLock() {
-    return null;
+    return delegate.getReadWriteLock();
   }
 
-  @Override
   public int hashCode() {
     return delegate.hashCode();
   }
 
-  @Override
   public boolean equals(Object obj) {
     return delegate.equals(obj);
   }

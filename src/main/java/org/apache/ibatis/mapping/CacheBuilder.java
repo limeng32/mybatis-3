@@ -23,8 +23,8 @@ import java.util.Properties;
 
 import org.apache.ibatis.cache.Cache;
 import org.apache.ibatis.cache.CacheException;
+import org.apache.ibatis.cache.decorators.FifoCache;
 import org.apache.ibatis.cache.decorators.LoggingCache;
-import org.apache.ibatis.cache.decorators.LruCache;
 import org.apache.ibatis.cache.decorators.ScheduledCache;
 import org.apache.ibatis.cache.decorators.SerializedCache;
 import org.apache.ibatis.cache.decorators.SynchronizedCache;
@@ -32,9 +32,6 @@ import org.apache.ibatis.cache.impl.PerpetualCache;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.SystemMetaObject;
 
-/**
- * @author Clinton Begin
- */
 public class CacheBuilder {
   private String id;
   private Class<? extends Cache> implementation;
@@ -85,14 +82,13 @@ public class CacheBuilder {
     setDefaultImplementations();
     Cache cache = newBaseCacheInstance(implementation, id);
     setCacheProperties(cache);
-    if (PerpetualCache.class.equals(cache.getClass())) { // issue #352, do not apply decorators to custom caches
+    // issue #352, do not apply decorators to custom caches
+    if (cache.getClass().getName().startsWith("org.apache.ibatis")) {
       for (Class<? extends Cache> decorator : decorators) {
         cache = newCacheDecoratorInstance(decorator, cache);
         setCacheProperties(cache);
       }
       cache = setStandardDecorators(cache);
-    } else if (!LoggingCache.class.isAssignableFrom(cache.getClass())) {
-      cache = new LoggingCache(cache);
     }
     return cache;
   }
@@ -101,7 +97,7 @@ public class CacheBuilder {
     if (implementation == null) {
       implementation = PerpetualCache.class;
       if (decorators.size() == 0) {
-        decorators.add(LruCache.class);
+        decorators.add(FifoCache.class);
       }
     }
   }

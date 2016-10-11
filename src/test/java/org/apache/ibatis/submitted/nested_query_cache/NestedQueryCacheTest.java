@@ -1,5 +1,5 @@
 /*
- *    Copyright 2009-2012 The MyBatis Team
+ *    Copyright 2009-2012 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import org.junit.Test;
 import java.io.Reader;
 
 import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 public class NestedQueryCacheTest extends BaseDataTest {
 
@@ -50,10 +50,6 @@ public class NestedQueryCacheTest extends BaseDataTest {
     try {
       final AuthorMapper authorMapper = sqlSession.getMapper(AuthorMapper.class);
       author = authorMapper.selectAuthor(101);
-      
-      // ensure that author is cached
-      final Author cachedAuthor = authorMapper.selectAuthor(101);
-      assertThat("cached author", author, sameInstance(cachedAuthor));
     } finally {
       sqlSession.close();
     }
@@ -61,7 +57,12 @@ public class NestedQueryCacheTest extends BaseDataTest {
     // open a new session
     sqlSession = sqlSessionFactory.openSession();
     try {
+      final AuthorMapper authorMapper = sqlSession.getMapper(AuthorMapper.class);
       final BlogMapper blogMapper = sqlSession.getMapper(BlogMapper.class);
+
+      // ensure that author is cached
+      final Author cachedAuthor = authorMapper.selectAuthor(101);
+      assertThat("cached author", author, sameInstance(cachedAuthor));
 
       // ensure that nested author within blog is cached
       assertThat("blog author", blogMapper.selectBlog(1).getAuthor(), sameInstance(author));
@@ -70,34 +71,4 @@ public class NestedQueryCacheTest extends BaseDataTest {
       sqlSession.close();
     }
   }
-  
-  @Test
-  public void testThatNestedQueryItemsAreRetrievedIfNotInCache() throws Exception {
-    SqlSession sqlSession = sqlSessionFactory.openSession();
-    Author author = null;
-    try {
-      final BlogMapper blogMapper = sqlSession.getMapper(BlogMapper.class);
-      author = blogMapper.selectBlog(1).getAuthor();
-      
-      // ensure that nested author within blog is cached
-      assertNotNull("blog author", blogMapper.selectBlog(1).getAuthor());
-      assertNotNull("blog author", blogMapper.selectBlogUsingConstructor(1).getAuthor());
-    } finally {
-      sqlSession.close();
-    }
-
-    // open a new session
-    sqlSession = sqlSessionFactory.openSession();    
-    try {
-      final AuthorMapper authorMapper = sqlSession.getMapper(AuthorMapper.class);
-      Author cachedAuthor = authorMapper.selectAuthor(101);
-
-      // ensure that nested author within blog is cached
-      assertThat("blog author", cachedAuthor, sameInstance(author));
-      
-    } finally {
-      sqlSession.close();
-    }
-    
-  }  
 }

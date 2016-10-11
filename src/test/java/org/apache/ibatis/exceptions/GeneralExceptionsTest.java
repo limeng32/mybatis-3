@@ -29,7 +29,6 @@ import org.apache.ibatis.logging.LogException;
 import org.apache.ibatis.parsing.ParsingException;
 import org.apache.ibatis.plugin.PluginException;
 import org.apache.ibatis.reflection.ReflectionException;
-import org.apache.ibatis.scripting.ScriptingException;
 import org.apache.ibatis.session.SqlSessionException;
 import org.apache.ibatis.transaction.TransactionException;
 import org.apache.ibatis.type.TypeException;
@@ -62,8 +61,7 @@ public class GeneralExceptionsTest {
         PersistenceException.class,
         SqlSessionException.class,
         TransactionException.class,
-        TypeException.class, 
-        ScriptingException.class
+        TypeException.class
     };
     for (Class<?> exceptionType : exceptionTypes) {
       testExceptionConstructors(exceptionType);

@@ -29,9 +29,6 @@ import org.apache.ibatis.session.defaults.DefaultSqlSessionFactory;
  * Builds {@link SqlSession} instances.
  *
  */
-/**
- * @author Clinton Begin
- */
 public class SqlSessionFactoryBuilder {
 
   public SqlSessionFactory build(Reader reader) {

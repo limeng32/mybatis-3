@@ -1,5 +1,5 @@
 /*
- *    Copyright 2009-2014 the original author or authors.
+ *    Copyright 2009-2013 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import org.apache.ibatis.binding.MapperRegistry;
 import org.apache.ibatis.builder.CacheRefResolver;
@@ -88,9 +87,6 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeAliasRegistry;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
-/**
- * @author Clinton Begin
- */
 public class Configuration {
 
   protected Environment environment;
@@ -104,9 +100,6 @@ public class Configuration {
   protected boolean useColumnLabel = true;
   protected boolean cacheEnabled = true;
   protected boolean callSettersOnNulls = false;
-  protected boolean injectionFilterEnabled = false; 
-  protected Pattern injectionFilter = Pattern.compile("^[a-zA-Z0-9._]*$");
-  
   protected String logPrefix;
   protected Class <? extends Log> logImpl;
   protected LocalCacheScope localCacheScope = LocalCacheScope.SESSION;
@@ -122,7 +115,7 @@ public class Configuration {
   protected MapperRegistry mapperRegistry = new MapperRegistry(this);
 
   protected boolean lazyLoadingEnabled = false;
-  protected ProxyFactory proxyFactory = new JavassistProxyFactory(); // #224 Using internal Javassist instead of OGNL
+  protected ProxyFactory proxyFactory;
 
   protected String databaseId;
   /**
@@ -295,6 +288,9 @@ public class Configuration {
   }
 
   public void setLazyLoadingEnabled(boolean lazyLoadingEnabled) {
+    if (lazyLoadingEnabled && this.proxyFactory == null) {
+      this.proxyFactory = new CglibProxyFactory();
+    }
     this.lazyLoadingEnabled = lazyLoadingEnabled;
   }
 
@@ -303,9 +299,6 @@ public class Configuration {
   }
 
   public void setProxyFactory(ProxyFactory proxyFactory) {
-    if (proxyFactory == null) {
-      proxyFactory = new JavassistProxyFactory();
-    }
     this.proxyFactory = proxyFactory;
   }
 
@@ -478,6 +471,10 @@ public class Configuration {
   }
 
   public Executor newExecutor(Transaction transaction, ExecutorType executorType) {
+    return newExecutor(transaction, executorType, false);
+  }
+
+  public Executor newExecutor(Transaction transaction, ExecutorType executorType, boolean autoCommit) {
     executorType = executorType == null ? defaultExecutorType : executorType;
     executorType = executorType == null ? ExecutorType.SIMPLE : executorType;
     Executor executor;
@@ -489,7 +486,7 @@ public class Configuration {
       executor = new SimpleExecutor(this, transaction);
     }
     if (cacheEnabled) {
-      executor = new CachingExecutor(executor);
+      executor = new CachingExecutor(executor, autoCommit);
     }
     executor = (Executor) interceptorChain.pluginAll(executor);
     return executor;
@@ -677,22 +674,6 @@ public class Configuration {
     cacheRefMap.put(namespace, referencedNamespace);
   }
 
-  public boolean isInjectionFilterEnabled() {
-    return injectionFilterEnabled;
-  }
-
-  public void setInjectionFilterEnabled(boolean injectionFilterEnabled) {
-    this.injectionFilterEnabled = injectionFilterEnabled;
-  }
-
-  public Pattern getInjectionFilter() {
-    return injectionFilter;
-  }
-
-  public void setInjectionFilter(Pattern injectionFilter) {
-    this.injectionFilter = injectionFilter;
-  }
-  
   /*
    * Parses all the unprocessed statement nodes in the cache. It is recommended
    * to call this method once all the mappers are added as it provides fail-fast

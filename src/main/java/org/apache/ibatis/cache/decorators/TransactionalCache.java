@@ -1,5 +1,5 @@
 /*
- *    Copyright 2009-2014 the original author or authors.
+ *    Copyright 2009-2012 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -21,9 +21,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 
 import org.apache.ibatis.cache.Cache;
 
-/**
- * @author Clinton Begin
- */
 public class TransactionalCache implements Cache {
 
   private Cache delegate;
@@ -38,58 +35,55 @@ public class TransactionalCache implements Cache {
     this.entriesToRemoveOnCommit = new HashMap<Object, RemoveEntry>();
   }
 
-  @Override
   public String getId() {
     return delegate.getId();
   }
 
-  @Override
   public int getSize() {
     return delegate.getSize();
   }
 
-  @Override
   public Object getObject(Object key) {
-    if (clearOnCommit) return null; // issue #146
     return delegate.getObject(key);
   }
 
-  @Override
   public ReadWriteLock getReadWriteLock() {
-    return null;
+    return delegate.getReadWriteLock();
   }
 
-  @Override
   public void putObject(Object key, Object object) {
     entriesToRemoveOnCommit.remove(key);
     entriesToAddOnCommit.put(key, new AddEntry(delegate, key, object));
   }
 
-  @Override
   public Object removeObject(Object key) {
     entriesToAddOnCommit.remove(key);
     entriesToRemoveOnCommit.put(key, new RemoveEntry(delegate, key));
     return delegate.getObject(key);
   }
 
-  @Override
   public void clear() {
     reset();
     clearOnCommit = true;
   }
 
   public void commit() {
-    if (clearOnCommit) {
-      delegate.clear();
-    } else {
-      for (RemoveEntry entry : entriesToRemoveOnCommit.values()) {
+    delegate.getReadWriteLock().writeLock().lock();
+    try {
+      if (clearOnCommit) {
+        delegate.clear();
+      } else {
+        for (RemoveEntry entry : entriesToRemoveOnCommit.values()) {
+          entry.commit();
+        }
+      }
+      for (AddEntry entry : entriesToAddOnCommit.values()) {
         entry.commit();
       }
+      reset();
+    } finally {
+      delegate.getReadWriteLock().writeLock().unlock();
     }
-    for (AddEntry entry : entriesToAddOnCommit.values()) {
-      entry.commit();
-    }
-    reset();
   }
 
   public void rollback() {
@@ -131,5 +125,6 @@ public class TransactionalCache implements Cache {
       cache.removeObject(key);
     }
   }
+
 
 }

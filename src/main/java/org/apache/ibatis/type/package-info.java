@@ -15,6 +15,6 @@
  */
 
 /**
- * Type handlers.
+ * TODO fillme.
  */
 package org.apache.ibatis.type;

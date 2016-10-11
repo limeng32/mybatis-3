@@ -28,12 +28,6 @@ public class ParameterExpressionTest {
     Assert.assertEquals("id", result.get("property"));
   }
 
-  public void propertyWithSpacesInside() {
-    Map<String, String> result = new ParameterExpression(" with spaces ");
-    Assert.assertEquals(1, result.size());
-    Assert.assertEquals("with spaces", result.get("property"));
-  }
-
   @Test
   public void simplePropertyWithOldStyleJdbcType() {
     Map<String, String> result = new ParameterExpression("id:VARCHAR");

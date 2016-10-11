@@ -1,5 +1,5 @@
 /*
- *    Copyright 2009-2014 the original author or authors.
+ *    Copyright 2009-2011 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 package org.apache.ibatis.logging.jdbc;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -26,11 +25,8 @@ import java.util.StringTokenizer;
 
 import org.apache.ibatis.logging.Log;
 
-/**
+/*
  * Base class for proxies to do logging
- * 
- * @author Clinton Begin
- * @author Eduardo Macarron
  */
 public abstract class BaseJdbcLogger {
 
@@ -42,16 +38,13 @@ public abstract class BaseJdbcLogger {
   private List<Object> columnNames = new ArrayList<Object>();
   private List<Object> columnValues = new ArrayList<Object>();
 
-  protected Log statementLog;
-  protected int queryStack;
+  private Log statementLog;
 
   /*
    * Default constructor
    */
-  public BaseJdbcLogger(Log log, int queryStack) {
+  public BaseJdbcLogger(Log log) {
     this.statementLog = log;
-    if (queryStack == 0) queryStack = 1;
-    this.queryStack = queryStack;
   }
 
   static {
@@ -134,28 +127,20 @@ public abstract class BaseJdbcLogger {
     return statementLog.isTraceEnabled();
   }
 
-  protected void debug(String text, boolean input) {
+  protected void debug(String text) {
     if (statementLog.isDebugEnabled()) {
-      statementLog.debug(prefix(input) + text);
+      statementLog.debug(text);
     }
   }
 
-  protected void trace(String text, boolean input) {
+  protected void trace(String text) {
     if (statementLog.isTraceEnabled()) {
-      statementLog.trace(prefix(input) + text);
+      statementLog.trace(text);
     }
   }
 
-  private String prefix(boolean isInput) {
-    char[] buffer = new char[queryStack * 2 + 2];
-    Arrays.fill(buffer, '=');
-    buffer[queryStack * 2 + 1] = ' ';
-    if (isInput) {
-      buffer[queryStack * 2] = '>';
-    } else {
-      buffer[0] = '<';
-    }
-    return new String(buffer);
+  public Log getStatementLog() {
+    return statementLog;
   }
 
 }

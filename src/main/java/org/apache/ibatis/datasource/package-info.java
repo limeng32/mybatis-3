@@ -15,6 +15,6 @@
  */
 
 /**
- * Base package for Datasources
+ * TODO fillme.
  */
 package org.apache.ibatis.datasource;

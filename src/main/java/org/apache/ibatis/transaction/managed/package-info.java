@@ -15,6 +15,6 @@
  */
 
 /**
- * External transaction.
+ * TODO fillme.
  */
 package org.apache.ibatis.transaction.managed;

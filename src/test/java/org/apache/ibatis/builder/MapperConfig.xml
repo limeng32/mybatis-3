@@ -23,7 +23,9 @@
 
 <configuration>
 
-  <properties resource="databases/blog/blog-derby.properties"/>
+  <properties resource="org/apache/ibatis/builder/mapper.properties">
+    <property name="driver" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+  </properties>
 
   <settings>
     <setting name="cacheEnabled" value="true"/>
@@ -81,3 +83,5 @@
   </mappers>
 
 </configuration>
+
+

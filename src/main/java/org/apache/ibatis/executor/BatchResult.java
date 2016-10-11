@@ -20,9 +20,6 @@ import java.util.List;
 
 import org.apache.ibatis.mapping.MappedStatement;
 
-/**
- * @author Jeff Butler
- */
 public class BatchResult {
 
   private final MappedStatement mappedStatement;

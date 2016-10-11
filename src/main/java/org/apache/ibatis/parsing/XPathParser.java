@@ -39,9 +39,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-/**
- * @author Clinton Begin
- */
 public class XPathParser {
 
   private Document document;

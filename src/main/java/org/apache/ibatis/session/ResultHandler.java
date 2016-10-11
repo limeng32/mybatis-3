@@ -15,9 +15,6 @@
  */
 package org.apache.ibatis.session;
 
-/**
- * @author Clinton Begin
- */
 public interface ResultHandler {
 
   void handleResult(ResultContext context);

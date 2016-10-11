@@ -18,9 +18,6 @@ package org.apache.ibatis.reflection.invoker;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-/**
- * @author Clinton Begin
- */
 public class MethodInvoker implements Invoker {
 
   private Class<?> type;

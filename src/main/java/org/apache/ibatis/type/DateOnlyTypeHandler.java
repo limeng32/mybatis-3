@@ -21,9 +21,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
-/**
- * @author Clinton Begin
- */
 public class DateOnlyTypeHandler extends BaseTypeHandler<Date> {
 
   @Override

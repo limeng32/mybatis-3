@@ -15,6 +15,6 @@
  */
 
 /**
- * Base package for exceptions.
+ * TODO fillme.
  */
 package org.apache.ibatis.exceptions;

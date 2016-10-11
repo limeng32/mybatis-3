@@ -15,6 +15,6 @@
  */
 
 /**
- * Base package for handing plugins.
+ * TODO fillme.
  */
 package org.apache.ibatis.plugin;

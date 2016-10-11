@@ -22,9 +22,6 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
 
-/**
- * @author Clinton Begin
- */
 public class DateTypeHandler extends BaseTypeHandler<Date> {
 
   @Override

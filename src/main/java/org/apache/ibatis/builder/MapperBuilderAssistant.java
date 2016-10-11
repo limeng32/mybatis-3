@@ -49,9 +49,6 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 
-/**
- * @author Clinton Begin
- */
 public class MapperBuilderAssistant extends BaseBuilder {
 
   private String currentNamespace;
@@ -208,6 +205,37 @@ public class MapperBuilderAssistant extends BaseBuilder {
     return resultMap;
   }
 
+  public ResultMapping buildResultMapping(
+      Class<?> resultType,
+      String property,
+      String column,
+      Class<?> javaType,
+      JdbcType jdbcType,
+      String nestedSelect,
+      String nestedResultMap,
+      String notNullColumn,
+      String columnPrefix,
+      Class<? extends TypeHandler<?>> typeHandler,
+      List<ResultFlag> flags,
+      String resultSet,
+      String foreignColumn) {
+    ResultMapping resultMapping = assembleResultMapping(
+        resultType,
+        property,
+        column,
+        javaType,
+        jdbcType,
+        nestedSelect,
+        nestedResultMap,
+        notNullColumn,
+        columnPrefix,
+        typeHandler,
+        flags,
+        resultSet,
+        foreignColumn);
+    return resultMapping;
+  }
+
   public Discriminator buildDiscriminator(
       Class<?> resultType,
       String column,
@@ -215,7 +243,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
       JdbcType jdbcType,
       Class<? extends TypeHandler<?>> typeHandler,
       Map<String, String> discriminatorMap) {
-    ResultMapping resultMapping = buildResultMapping(
+    ResultMapping resultMapping = assembleResultMapping(
         resultType,
         null,
         column,
@@ -228,8 +256,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
         typeHandler,
         new ArrayList<ResultFlag>(),
         null,
-        null,
-        false);
+        null);
     Map<String, String> namespaceDiscriminatorMap = new HashMap<String, String>();
     for (Map.Entry<String, String> e : discriminatorMap.entrySet()) {
       String resultMap = e.getValue();
@@ -367,7 +394,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
     statementBuilder.timeout(timeout);
   }
 
-  public ResultMapping buildResultMapping(
+  private ResultMapping assembleResultMapping(
       Class<?> resultType,
       String property,
       String column,
@@ -380,8 +407,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
       Class<? extends TypeHandler<?>> typeHandler,
       List<ResultFlag> flags,
       String resultSet,
-      String foreignColumn, 
-      boolean lazy) {
+      String foreignColumn) {
     Class<?> javaTypeClass = resolveResultJavaType(resultType, property, javaType);
     TypeHandler<?> typeHandlerInstance = resolveTypeHandler(javaTypeClass, typeHandler);
     List<ResultMapping> composites = parseCompositeColumnName(column);
@@ -397,7 +423,6 @@ public class MapperBuilderAssistant extends BaseBuilder {
     builder.notNullColumns(parseMultipleColumnNames(notNullColumn));
     builder.columnPrefix(columnPrefix);
     builder.foreignColumn(foreignColumn);
-    builder.lazy(lazy);
     return builder.build();
   }
 
@@ -478,7 +503,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
       List<ResultFlag> flags) {
       return buildResultMapping(
         resultType, property, column, javaType, jdbcType, nestedSelect, 
-        nestedResultMap, notNullColumn, columnPrefix, typeHandler, flags, null, null, configuration.isLazyLoadingEnabled());
+        nestedResultMap, notNullColumn, columnPrefix, typeHandler, flags, null, null);
   }  
 
   public LanguageDriver getLanguageDriver(Class<?> langClass) {

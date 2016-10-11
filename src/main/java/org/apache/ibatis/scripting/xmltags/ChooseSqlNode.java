@@ -17,9 +17,6 @@ package org.apache.ibatis.scripting.xmltags;
 
 import java.util.List;
 
-/**
- * @author Clinton Begin
- */
 public class ChooseSqlNode implements SqlNode {
   private SqlNode defaultSqlNode;
   private List<SqlNode> ifSqlNodes;

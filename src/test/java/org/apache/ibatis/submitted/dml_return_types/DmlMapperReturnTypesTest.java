@@ -28,7 +28,7 @@ import org.junit.Test;
 import java.io.Reader;
 import java.sql.Connection;
 
-import static org.junit.Assert.assertEquals;
+import static junit.framework.Assert.assertEquals;
 
 public class DmlMapperReturnTypesTest {
 

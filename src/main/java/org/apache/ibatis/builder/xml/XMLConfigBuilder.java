@@ -42,9 +42,6 @@ import org.apache.ibatis.session.LocalCacheScope;
 import org.apache.ibatis.transaction.TransactionFactory;
 import org.apache.ibatis.type.JdbcType;
 
-/**
- * @author Clinton Begin
- */
 public class XMLConfigBuilder extends BaseBuilder {
 
   private boolean parsed;
@@ -217,11 +214,9 @@ public class XMLConfigBuilder extends BaseBuilder {
       configuration.setLogPrefix(props.getProperty("logPrefix"));
       configuration.setLogImpl(resolveClass(props.getProperty("logImpl")));
       configuration.setConfigurationFactory(resolveClass(props.getProperty("configurationFactory")));
-      configuration.setInjectionFilterEnabled(booleanValueOf(props.getProperty("injectionFilterEnabled"), false));
-      configuration.setInjectionFilter(parseExpression(props.getProperty("injectionFilter"), "^[a-zA-Z0-9._]*$"));
     }
   }
-  
+
   private void environmentsElement(XNode context) throws Exception {
     if (context != null) {
       if (environment == null) {

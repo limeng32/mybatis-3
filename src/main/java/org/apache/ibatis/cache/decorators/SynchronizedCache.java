@@ -1,5 +1,5 @@
 /*
- *    Copyright 2009-2014 the original author or authors.
+ *    Copyright 2009-2012 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -19,60 +19,90 @@ import java.util.concurrent.locks.ReadWriteLock;
 
 import org.apache.ibatis.cache.Cache;
 
-/**
- * @author Clinton Begin
- */
 public class SynchronizedCache implements Cache {
 
   private Cache delegate;
-  
+
   public SynchronizedCache(Cache delegate) {
     this.delegate = delegate;
   }
 
-  @Override
   public String getId() {
     return delegate.getId();
   }
 
-  @Override
-  public synchronized int getSize() {
-    return delegate.getSize();
+  public int getSize() {
+    acquireReadLock();
+    try {
+      return delegate.getSize();
+    } finally {
+      releaseReadLock();
+    }
   }
 
-  @Override
-  public synchronized void putObject(Object key, Object object) {
-    delegate.putObject(key, object);
+  public void putObject(Object key, Object object) {
+    acquireWriteLock();
+    try {
+      delegate.putObject(key, object);
+    } finally {
+      releaseWriteLock();
+    }
   }
 
-  @Override
-  public synchronized Object getObject(Object key) {
-    return delegate.getObject(key);
+  public Object getObject(Object key) {
+    acquireReadLock();
+    try {
+      return delegate.getObject(key);
+    } finally {
+      releaseReadLock();
+    }
   }
 
-  @Override
-  public synchronized Object removeObject(Object key) {
-    return delegate.removeObject(key);
+  public Object removeObject(Object key) {
+    acquireWriteLock();
+    try {
+      return delegate.removeObject(key);
+    } finally {
+      releaseWriteLock();
+    }
   }
 
-  @Override
-  public synchronized void clear() {
-    delegate.clear();
+
+  public void clear() {
+    acquireWriteLock();
+    try {
+      delegate.clear();
+    } finally {
+      releaseWriteLock();
+    }
   }
 
-  @Override
+  public ReadWriteLock getReadWriteLock() {
+    return delegate.getReadWriteLock();
+  }
+
   public int hashCode() {
     return delegate.hashCode();
   }
 
-  @Override
   public boolean equals(Object obj) {
     return delegate.equals(obj);
   }
 
-  @Override
-  public ReadWriteLock getReadWriteLock() {
-    return null;
+  private void acquireReadLock() {
+    getReadWriteLock().readLock().lock();
+  }
+
+  private void releaseReadLock() {
+    getReadWriteLock().readLock().unlock();
+  }
+
+  private void acquireWriteLock() {
+    getReadWriteLock().writeLock().lock();
+  }
+
+  private void releaseWriteLock() {
+    getReadWriteLock().writeLock().unlock();
   }
 
 }

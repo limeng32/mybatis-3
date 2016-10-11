@@ -23,9 +23,6 @@ import java.lang.annotation.Target;
 import org.apache.ibatis.mapping.ResultSetType;
 import org.apache.ibatis.mapping.StatementType;
 
-/**
- * @author Clinton Begin
- */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Options {

@@ -15,6 +15,6 @@
  */
 
 /**
- * Parses XML files to create a Configuration
+ * TODO fillme.
  */
 package org.apache.ibatis.builder.xml;

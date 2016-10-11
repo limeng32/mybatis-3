@@ -117,7 +117,6 @@ columnPrefix CDATA #IMPLIED
 resultSet CDATA #IMPLIED
 foreignColumn CDATA #IMPLIED
 autoMapping (true|false) #IMPLIED
-fetchType (lazy|eager) #IMPLIED
 >
 
 <!ELEMENT association (constructor?,id*,result*,association*,collection*, discriminator?)>
@@ -134,7 +133,6 @@ columnPrefix CDATA #IMPLIED
 resultSet CDATA #IMPLIED
 foreignColumn CDATA #IMPLIED
 autoMapping (true|false) #IMPLIED
-fetchType (lazy|eager) #IMPLIED
 >
 
 <!ELEMENT discriminator (case+)>
@@ -203,12 +201,11 @@ lang CDATA #IMPLIED
 resultType CDATA #IMPLIED
 statementType (STATEMENT|PREPARED|CALLABLE) #IMPLIED
 keyProperty CDATA #IMPLIED
-keyColumn CDATA #IMPLIED
 order (BEFORE|AFTER) #IMPLIED
 databaseId CDATA #IMPLIED
 >
 
-<!ELEMENT update (#PCDATA | selectKey | include | trim | where | set | foreach | choose | if | bind)*>
+<!ELEMENT update (#PCDATA | include | trim | where | set | foreach | choose | if | bind)*>
 <!ATTLIST update
 id CDATA #REQUIRED
 parameterMap CDATA #IMPLIED
@@ -216,9 +213,6 @@ parameterType CDATA #IMPLIED
 timeout CDATA #IMPLIED
 flushCache (true|false) #IMPLIED
 statementType (STATEMENT|PREPARED|CALLABLE) #IMPLIED
-keyProperty CDATA #IMPLIED
-useGeneratedKeys (true|false) #IMPLIED
-keyColumn CDATA #IMPLIED
 databaseId CDATA #IMPLIED
 lang CDATA #IMPLIED
 >

@@ -15,6 +15,6 @@
  */
 
 /**
- * Contains the result processing logic
+ * TODO fillme.
  */
 package org.apache.ibatis.executor.resultset;

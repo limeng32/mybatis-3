@@ -15,9 +15,6 @@
  */
 package org.apache.ibatis.parsing;
 
-/**
- * @author Clinton Begin
- */
 public class GenericTokenParser {
 
   private final String openToken;
@@ -39,7 +36,7 @@ public class GenericTokenParser {
       while (start > -1) {
         if (start > 0 && src[start - 1] == '\\') {
           // the variable is escaped. remove the backslash.
-          builder.append(src, offset, start - offset - 1).append(openToken);
+          builder.append(src, offset, start - 1).append(openToken);
           offset = start + openToken.length();
         } else {
           int end = text.indexOf(closeToken, start);

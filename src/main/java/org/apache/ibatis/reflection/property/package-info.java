@@ -15,6 +15,6 @@
  */
 
 /**
- * Tools for getting/setting properties
+ * TODO fillme.
  */
 package org.apache.ibatis.reflection.property;

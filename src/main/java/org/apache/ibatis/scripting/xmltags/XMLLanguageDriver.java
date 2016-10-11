@@ -15,8 +15,6 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
-import java.util.regex.Pattern;
-
 import org.apache.ibatis.builder.xml.XMLMapperEntityResolver;
 import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.mapping.BoundSql;
@@ -30,9 +28,6 @@ import org.apache.ibatis.scripting.defaults.DefaultParameterHandler;
 import org.apache.ibatis.scripting.defaults.RawSqlSource;
 import org.apache.ibatis.session.Configuration;
 
-/**
- * @author Eduardo Macarron
- */
 public class XMLLanguageDriver implements LanguageDriver {
 
   public ParameterHandler createParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
@@ -50,17 +45,13 @@ public class XMLLanguageDriver implements LanguageDriver {
       return createSqlSource(configuration, parser.evalNode("/script"), parameterType);
     } else {
       script = PropertyParser.parse(script, configuration.getVariables()); // issue #127
-      TextSqlNode textSqlNode = new TextSqlNode(script, getInjectionFilter(configuration));
+      TextSqlNode textSqlNode = new TextSqlNode(script);
       if (textSqlNode.isDynamic()) {
         return new DynamicSqlSource(configuration, textSqlNode);
       } else {
         return new RawSqlSource(configuration, script, parameterType);
       }
     }
-  }
-  
-  private Pattern getInjectionFilter(Configuration configuration) {
-    return configuration.isInjectionFilterEnabled() ? configuration.getInjectionFilter() : null; 
   }
 
 }

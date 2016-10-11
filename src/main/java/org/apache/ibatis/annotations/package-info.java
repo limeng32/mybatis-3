@@ -15,7 +15,7 @@
  */
 
 /**
- * Contains all the annotation that are used in mapper interfaces
+ * TODO fillme.
  */
 package org.apache.ibatis.annotations;
 

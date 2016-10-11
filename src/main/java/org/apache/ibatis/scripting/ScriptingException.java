@@ -17,9 +17,6 @@ package org.apache.ibatis.scripting;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 
-/**
- * @author Frank D. Martinez [mnesarco]
- */
 public class ScriptingException extends PersistenceException {
 
   private static final long serialVersionUID = 7642570221267566591L;

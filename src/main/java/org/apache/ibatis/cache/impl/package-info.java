@@ -15,6 +15,6 @@
  */
 
 /**
- * Contains the default cache implementation
+ * TODO fillme.
  */
 package org.apache.ibatis.cache.impl;

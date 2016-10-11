@@ -1,5 +1,5 @@
 /*
- *    Copyright 2009-2014 the original author or authors.
+ *    Copyright 2009-2012 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -23,9 +23,6 @@ import java.sql.SQLException;
 
 import org.apache.ibatis.reflection.ExceptionUtil;
 
-/**
- * @author Clinton Begin
- */
 class PooledConnection implements InvocationHandler {
 
   private static final String CLOSE = "close";
@@ -231,15 +228,17 @@ class PooledConnection implements InvocationHandler {
    * @param args   - the parameters to be passed to the method
    * @see java.lang.reflect.InvocationHandler#invoke(Object, java.lang.reflect.Method, Object[])
    */
-  public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+  public Object invoke(Object proxy, Method method, Object[] args)
+      throws Throwable {
     String methodName = method.getName();
     if (CLOSE.hashCode() == methodName.hashCode() && CLOSE.equals(methodName)) {
       dataSource.pushConnection(this);
       return null;
     } else {
       try {
-        if (!Object.class.equals(method.getDeclaringClass())) {
-          // issue #579 toString() should never fail
+        if (method.getDeclaringClass() != Object.class) {
+          // issue #578. 
+          // toString() should never fail
           // throw an SQLException instead of a Runtime
           checkConnection();
         }

@@ -33,9 +33,6 @@ import org.apache.ibatis.parsing.XNode;
 import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.session.Configuration;
 
-/**
- * @author Clinton Begin
- */
 public class XMLStatementBuilder extends BaseBuilder {
 
   private MapperBuilderAssistant builderAssistant;
@@ -134,7 +131,6 @@ public class XMLStatementBuilder extends BaseBuilder {
     Class<?> resultTypeClass = resolveClass(resultType);
     StatementType statementType = StatementType.valueOf(nodeToHandle.getStringAttribute("statementType", StatementType.PREPARED.toString()));
     String keyProperty = nodeToHandle.getStringAttribute("keyProperty");
-    String keyColumn = nodeToHandle.getStringAttribute("keyColumn");
     boolean executeBefore = "BEFORE".equals(nodeToHandle.getStringAttribute("order", "AFTER"));
 
     //defaults
@@ -154,7 +150,7 @@ public class XMLStatementBuilder extends BaseBuilder {
     builderAssistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType,
         fetchSize, timeout, parameterMap, parameterTypeClass, resultMap, resultTypeClass,
         resultSetTypeEnum, flushCache, useCache, resultOrdered,
-        keyGenerator, keyProperty, keyColumn, databaseId, langDriver, null);
+        keyGenerator, keyProperty, null, databaseId, langDriver, null);
 
     id = builderAssistant.applyCurrentNamespace(id, false);
 

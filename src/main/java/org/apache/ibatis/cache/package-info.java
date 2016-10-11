@@ -15,6 +15,6 @@
  */
 
 /**
- * Base package for caching stuff
+ * TODO fillme.
  */
 package org.apache.ibatis.cache;

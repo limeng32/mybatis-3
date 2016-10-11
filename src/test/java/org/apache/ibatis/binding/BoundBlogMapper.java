@@ -19,9 +19,7 @@ import domain.blog.Author;
 import domain.blog.Blog;
 import domain.blog.DraftPost;
 import domain.blog.Post;
-
 import org.apache.ibatis.annotations.*;
-import org.apache.ibatis.mapping.FetchType;
 import org.apache.ibatis.session.RowBounds;
 
 import java.util.List;
@@ -141,12 +139,6 @@ public interface BoundBlogMapper {
 
   //======================================================
 
-  @Select("SELECT * FROM " +
-    "post WHERE id = #{id}")
-  List<Post> selectPostsById(int id);
-
-  //======================================================
-
   @Select("SELECT * FROM blog " +
           "WHERE id = #{id} AND title = #{nonExistentParam,jdbcType=VARCHAR}")
   Blog selectBlogByNonExistentParam(@Param("id") int id);
@@ -174,26 +166,5 @@ public interface BoundBlogMapper {
       "WHERE ${column} = #{id} AND title = #{value}")
   Blog selectBlogWithAParamNamedValue(@Param("column") String column, @Param("id") int id, @Param("value") String title);
 
-  //======================================================
   
-  @Select({
-      "SELECT *",
-      "FROM blog"
-  })
-  @Results({ 
-      @Result(property = "author", column = "author_id", one = @One(select = "org.apache.ibatis.binding.BoundAuthorMapper.selectAuthor")), 
-      @Result(property = "posts", column = "id", many = @Many(select = "selectPostsById"))
-  })
-  List<Blog> selectBlogsWithAutorAndPosts();
-
-  @Select({
-      "SELECT *",
-      "FROM blog"
-  })
-  @Results({ 
-      @Result(property = "author", column = "author_id", one = @One(select = "org.apache.ibatis.binding.BoundAuthorMapper.selectAuthor", fetchType=FetchType.EAGER)), 
-      @Result(property = "posts", column = "id", many = @Many(select = "selectPostsById", fetchType=FetchType.EAGER))
-  })
-  List<Blog> selectBlogsWithAutorAndPostsEagerly();
- 
 }

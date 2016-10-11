@@ -17,9 +17,6 @@ package org.apache.ibatis.reflection;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 
-/**
- * @author Clinton Begin
- */
 public class ReflectionException extends PersistenceException {
 
   private static final long serialVersionUID = 7642570221267566591L;

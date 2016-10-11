@@ -15,6 +15,6 @@
  */
 
 /**
- * Base package for loading results into beans
+ * TODO fillme.
  */
 package org.apache.ibatis.executor.loader;

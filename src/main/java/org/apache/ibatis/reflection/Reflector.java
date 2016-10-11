@@ -39,9 +39,6 @@ import org.apache.ibatis.reflection.property.PropertyNamer;
  * This class represents a cached set of class definition information that
  * allows for easy mapping between property names and getter/setter methods.
  */
-/**
- * @author Clinton Begin
- */
 public class Reflector {
 
   private static boolean classCacheEnabled = true;
@@ -364,10 +361,6 @@ public class Reflector {
     } else {
       throw new ReflectionException("There is no default constructor for " + type);
     }
-  }
-
-  public boolean hasDefaultConstructor() {
-    return defaultConstructor != null;
   }
 
   public Invoker getSetInvoker(String propertyName) {

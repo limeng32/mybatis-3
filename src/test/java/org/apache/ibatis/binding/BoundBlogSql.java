@@ -15,17 +15,15 @@
  */
 package org.apache.ibatis.binding;
 
-import org.apache.ibatis.jdbc.SQL;
+import static org.apache.ibatis.jdbc.SelectBuilder.*;
 
 public class BoundBlogSql {
 
   public String selectBlogsSql() {
-    return new SQL() {
-      {
-        SELECT("*");
-        FROM("BLOG");
-      }
-    }.toString();
+    BEGIN();
+    SELECT("*");
+    FROM("BLOG");
+    return SQL();
   }
 
 }

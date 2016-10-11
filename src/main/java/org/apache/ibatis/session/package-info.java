@@ -15,6 +15,6 @@
  */
 
 /**
- * Base package. Contains the SqlSession.
+ * TODO fillme.
  */
 package org.apache.ibatis.session;

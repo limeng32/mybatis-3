@@ -15,6 +15,6 @@
  */
 
 /**
- * JNDI Datasource factory
+ * TODO fillme.
  */
 package org.apache.ibatis.datasource.jndi;

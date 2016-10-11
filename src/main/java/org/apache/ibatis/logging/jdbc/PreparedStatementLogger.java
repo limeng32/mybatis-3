@@ -25,36 +25,29 @@ import java.sql.ResultSet;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.reflection.ExceptionUtil;
 
-/**
+/*
  * PreparedStatement proxy to add logging
- * 
- * @author Clinton Begin
- * @author Eduardo Macarron
- * 
  */
 public final class PreparedStatementLogger extends BaseJdbcLogger implements InvocationHandler {
 
   private PreparedStatement statement;
 
-  private PreparedStatementLogger(PreparedStatement stmt, Log statementLog, int queryStack) {
-    super(statementLog, queryStack);
+  private PreparedStatementLogger(PreparedStatement stmt, Log statementLog) {
+    super(statementLog);
     this.statement = stmt;
   }
 
   public Object invoke(Object proxy, Method method, Object[] params) throws Throwable {
     try {
-      if (Object.class.equals(method.getDeclaringClass())) {
-        return method.invoke(this, params);
-      }          
       if (EXECUTE_METHODS.contains(method.getName())) {
         if (isDebugEnabled()) {
-          debug("Parameters: " + getParameterValueString(), true);
+          debug("==> Parameters: " + getParameterValueString());
         }
         clearColumnInfo();
         if ("executeQuery".equals(method.getName())) {
           ResultSet rs = (ResultSet) method.invoke(statement, params);
           if (rs != null) {
-            return ResultSetLogger.newInstance(rs, statementLog, queryStack);
+            return ResultSetLogger.newInstance(rs, getStatementLog());
           } else {
             return null;
           }
@@ -71,16 +64,21 @@ public final class PreparedStatementLogger extends BaseJdbcLogger implements Inv
       } else if ("getResultSet".equals(method.getName())) {
         ResultSet rs = (ResultSet) method.invoke(statement, params);
         if (rs != null) {
-          return ResultSetLogger.newInstance(rs, statementLog, queryStack);
+          return ResultSetLogger.newInstance(rs, getStatementLog());
         } else {
           return null;
         }
       } else if ("getUpdateCount".equals(method.getName())) {
         int updateCount = (Integer) method.invoke(statement, params);
         if (updateCount != -1) {
-          debug("   Updates: " + updateCount, false);
+          debug("<==    Updates: " + updateCount);
         }
         return updateCount;
+      } else if ("equals".equals(method.getName())) {
+        Object ps = params[0];
+        return ps instanceof Proxy && proxy == ps;
+      } else if ("hashCode".equals(method.getName())) {
+        return proxy.hashCode();
       } else {
         return method.invoke(statement, params);
       }
@@ -96,8 +94,8 @@ public final class PreparedStatementLogger extends BaseJdbcLogger implements Inv
    * @param sql  - the sql statement
    * @return - the proxy
    */
-  public static PreparedStatement newInstance(PreparedStatement stmt, Log statementLog, int queryStack) {
-    InvocationHandler handler = new PreparedStatementLogger(stmt, statementLog, queryStack);
+  public static PreparedStatement newInstance(PreparedStatement stmt, Log statementLog) {
+    InvocationHandler handler = new PreparedStatementLogger(stmt, statementLog);
     ClassLoader cl = PreparedStatement.class.getClassLoader();
     return (PreparedStatement) Proxy.newProxyInstance(cl, new Class[]{PreparedStatement.class, CallableStatement.class}, handler);
   }

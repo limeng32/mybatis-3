@@ -15,6 +15,6 @@
  */
 
 /**
- * Bings mapper interfaces with mapped statements
+ * TODO fillme.
  */
 package org.apache.ibatis.binding;

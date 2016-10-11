@@ -17,9 +17,6 @@ package org.apache.ibatis.plugin;
 
 import java.util.Properties;
 
-/**
- * @author Clinton Begin
- */
 public interface Interceptor {
 
   Object intercept(Invocation invocation) throws Throwable;

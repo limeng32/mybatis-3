@@ -15,6 +15,6 @@
  */
 
 /**
- * Utilities to read resources.
+ * TODO fillme.
  */
 package org.apache.ibatis.io;

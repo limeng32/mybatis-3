@@ -40,10 +40,6 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
-/**
- * @author Clinton Begin
- * @author Franta Mejta
- */
 public class ResultLoaderMap {
 
   private final Map<String, LoadPair> loaderMap = new HashMap<String, LoadPair>();

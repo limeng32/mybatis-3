@@ -15,6 +15,6 @@
  */
 
 /**
- * Hyper-simple Datasource.
+ * TODO fillme.
  */
 package org.apache.ibatis.datasource.unpooled;

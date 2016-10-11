@@ -15,6 +15,6 @@
  */
 
 /**
- * Base package for the Configuration building code
+ * TODO fillme.
  */
 package org.apache.ibatis.builder;

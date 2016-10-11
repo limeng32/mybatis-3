@@ -17,9 +17,8 @@ package org.apache.ibatis.jdbc;
 
 /**
  * @Deprecated Use the SQL Class
- *
- * @author Jeff Butler
  */
+@Deprecated
 public class SqlBuilder {
 
   private static final ThreadLocal<SQL> localSQL = new ThreadLocal<SQL>();

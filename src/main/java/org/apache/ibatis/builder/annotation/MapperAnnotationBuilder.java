@@ -67,7 +67,6 @@ import org.apache.ibatis.executor.keygen.NoKeyGenerator;
 import org.apache.ibatis.executor.keygen.SelectKeyGenerator;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.Discriminator;
-import org.apache.ibatis.mapping.FetchType;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.ResultFlag;
 import org.apache.ibatis.mapping.ResultMapping;
@@ -83,9 +82,6 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.UnknownTypeHandler;
 
-/**
- * @author Clinton Begin
- */
 public class MapperAnnotationBuilder {
 
   private final Set<Class<? extends Annotation>> sqlAnnotationTypes = new HashSet<Class<? extends Annotation>>();
@@ -123,9 +119,7 @@ public class MapperAnnotationBuilder {
       Method[] methods = type.getMethods();
       for (Method method : methods) {
         try {
-          if (!method.isBridge()) { // issue #237
-            parseStatement(method);
-          }
+          parseStatement(method);
         } catch (IncompleteElementException e) {
           configuration.addIncompleteMethod(new MethodResolver(this, method));
         }
@@ -262,7 +256,7 @@ public class MapperAnnotationBuilder {
       KeyGenerator keyGenerator;
       String keyProperty = "id";
       String keyColumn = null;
-      if (SqlCommandType.INSERT.equals(sqlCommandType) || SqlCommandType.UPDATE.equals(sqlCommandType)) {
+      if (SqlCommandType.INSERT.equals(sqlCommandType)) {
         // first check for SelectKey annotation - that overrides everything else
         SelectKey selectKey = method.getAnnotation(SelectKey.class);
         if (selectKey != null) {
@@ -483,8 +477,7 @@ public class MapperAnnotationBuilder {
           result.typeHandler() == UnknownTypeHandler.class ? null : result.typeHandler(),
           flags,
           null,
-          null,
-          isLazy(result));
+          null);
       resultMappings.add(resultMapping);
     }
   }
@@ -500,21 +493,8 @@ public class MapperAnnotationBuilder {
     return nestedSelect;
   }
 
-  private boolean isLazy(Result result) {
-    Boolean isLazy = configuration.isLazyLoadingEnabled();
-    if (result.one().select().length() > 0 && FetchType.DEFAULT != result.one().fetchType()) {
-      isLazy = (result.one().fetchType() == FetchType.LAZY);
-    } else if (result.many().select().length() > 0 && FetchType.DEFAULT != result.many().fetchType()) {
-      isLazy = (result.many().fetchType() == FetchType.LAZY);
-    }
-    return isLazy;
-  }
-  
   private boolean hasNestedSelect(Result result) {
-    if (result.one().select().length() > 0 && result.many().select().length() > 0) {
-      throw new BuilderException("Cannot use both @One and @Many annotations in the same @Result");
-    }
-    return result.one().select().length() > 0 || result.many().select().length() > 0;  
+    return result.one().select().length() > 0 || result.many().select().length() > 0;
   }
 
   private void applyConstructorArgs(Arg[] args, Class<?> resultType, List<ResultMapping> resultMappings) {
@@ -535,8 +515,7 @@ public class MapperAnnotationBuilder {
           arg.typeHandler() == UnknownTypeHandler.class ? null : arg.typeHandler(),
           flags,
           null,
-          null,
-          false);
+          null);
       resultMappings.add(resultMapping);
     }
   }
@@ -558,7 +537,6 @@ public class MapperAnnotationBuilder {
     Class<?> resultTypeClass = selectKeyAnnotation.resultType();
     StatementType statementType = selectKeyAnnotation.statementType();
     String keyProperty = selectKeyAnnotation.keyProperty();
-    String keyColumn = selectKeyAnnotation.keyColumn();
     boolean executeBefore = selectKeyAnnotation.before();
 
     // defaults
@@ -576,7 +554,7 @@ public class MapperAnnotationBuilder {
 
     assistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType, fetchSize, timeout, parameterMap, parameterTypeClass, resultMap, resultTypeClass, resultSetTypeEnum,
         flushCache, useCache, false,
-        keyGenerator, keyProperty, keyColumn, null, languageDriver, null);
+        keyGenerator, keyProperty, null, null, languageDriver, null);
 
     id = assistant.applyCurrentNamespace(id, false);
 

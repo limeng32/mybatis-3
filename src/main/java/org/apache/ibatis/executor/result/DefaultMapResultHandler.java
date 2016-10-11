@@ -23,9 +23,6 @@ import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
 import org.apache.ibatis.session.ResultContext;
 import org.apache.ibatis.session.ResultHandler;
 
-/**
- * @author Clinton Begin
- */
 public class DefaultMapResultHandler<K, V> implements ResultHandler {
 
   private final Map<K, V> mappedResults;

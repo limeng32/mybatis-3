@@ -20,9 +20,6 @@ import java.util.Map;
 
 import org.apache.ibatis.session.Configuration;
 
-/**
- * @author Clinton Begin
- */
 public class Discriminator {
 
   private ResultMapping resultMapping;

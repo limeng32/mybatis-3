@@ -24,9 +24,6 @@ import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.session.ResultHandler;
 
-/**
- * @author Clinton Begin
- */
 public interface StatementHandler {
 
   Statement prepare(Connection connection)

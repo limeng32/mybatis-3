@@ -15,9 +15,6 @@
  */
 package org.apache.ibatis.logging;
 
-/**
- * @author Clinton Begin
- */
 public interface Log {
 
   boolean isDebugEnabled();

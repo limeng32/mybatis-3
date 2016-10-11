@@ -19,13 +19,13 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.ResultMap;
 import org.apache.ibatis.session.Configuration;
@@ -35,9 +35,6 @@ import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 import org.apache.ibatis.type.UnknownTypeHandler;
 
-/**
- * @author Iwao AVE!
- */
 class ResultSetWrapper {
 
   private final ResultSet resultSet;
@@ -68,10 +65,6 @@ class ResultSetWrapper {
 
   public List<String> getColumnNames() {
     return this.columnNames;
-  }
-
-  public List<String> getClassNames() {
-    return Collections.unmodifiableList(classNames);
   }
 
   /**

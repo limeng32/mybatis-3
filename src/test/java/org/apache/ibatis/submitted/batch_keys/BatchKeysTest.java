@@ -28,7 +28,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.List;
 
-import org.junit.Assert;
+import junit.framework.Assert;
 
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.jdbc.ScriptRunner;

@@ -169,14 +169,15 @@ SqlSessionFactory factory = sqlSessionFactoryBuilder.build(reader, environment, 
                 lazyLoadingEnabled
               </td>
               <td>
-                Globally enables or disables lazy loading. When enabled, all relations will be lazily loaded. 
-                This value can be superseded for an specific relation by using the <code>fetchType</code> attribute on it.
+                Globally enables or disables lazy
+                loading. When disabled, all
+                associations will be eagerly loaded.
               </td>
               <td>
                 true | false
               </td>
               <td>
-                false
+                true
               </td>
             </tr>
             <tr>
@@ -811,7 +812,7 @@ public class Author {
                 <code>ByteTypeHandler</code>
               </td>
               <td>
-                <code>java.lang.Byte</code>, <code>byte</code>
+                <code>java.lang.Byte</code>, byte
               </td>
               <td>
                 Any compatible <code>NUMERIC</code> or <code>BYTE</code>
@@ -855,7 +856,7 @@ public class Author {
                 <code>FloatTypeHandler</code>
               </td>
               <td>
-                <code>java.lang.Float</code>, <code>float</code>
+                <code>java.lang.Float</code>, float
               </td>
               <td>
                 Any compatible <code>NUMERIC</code> or <code>FLOAT</code>
@@ -1053,9 +1054,10 @@ public class Author {
         </table>
         <p>
           You can override the type handlers or create your own to deal with
-          unsupported or non-standard types. To do so, implement the interface <code>org.apache.ibatis.type.TypeHandler</code>
-          or extend the convenience class <code>org.apache.ibatis.type.BaseTypeHandler</code> 
-          and optionally map it to a JDBC type. For example:
+          unsupported or non-standard types. To do so, simply extend
+          the
+          <code>org.apache.ibatis.type.BaseTypeHandler</code> class and optionally map your new
+          TypeHandler class to a JDBC type. For example:
         </p>
 
         <source><![CDATA[// ExampleTypeHandler.java
@@ -1116,7 +1118,7 @@ public class ExampleTypeHandler extends BaseTypeHandler<String> {
         <p>Associated JDBC type can be specified by two means:</p>
         <ul>
           <li>
-           Adding a <code>jdbcType</code> attribute to the typeHandler element (for example: <code>jdbcType="VARCHAR"</code>).
+           Adding a <code>jdbcType</code> attribute to the typeHandler element (for example: <code>jdbcType=VARCHAR</code>).
           </li>
           <li>Adding a <code>@MappedJdbcTypes</code> annotation to your TypeHandler class specifying
           the list of JDBC types to associate it with. This annotation will be ignored if
@@ -1270,10 +1272,7 @@ public class ExampleObjectFactory extends DefaultObjectFactory {
   public void setProperties(Properties properties) {
     super.setProperties(properties);
   }
-  public <T> boolean isCollection(Class<T> type) {
-    return Collection.class.isAssignableFrom(type);
-  }}
-]]></source>
+}]]></source>
 
         <source><![CDATA[<!-- mybatis-config.xml -->
 <objectFactory type="org.mybatis.example.ExampleObjectFactory">
@@ -1679,42 +1678,6 @@ SqlSessionFactory factory = sqlSessionFactoryBuilder.build(reader,properties);]]
           to the
           constructor of the InitialContext upon instantiation.
         </p>
-        
-		<p>
-		  You can plug any 3rd party DataSource by implementing the interface <code>org.apache.ibatis.datasource.DataSourceFactory</code>:
-		</p>
-
-        <source><![CDATA[public interface DataSourceFactory {
-  void setProperties(Properties props);
-  DataSource getDataSource();
-}]]></source>
-
-        <p>
-		  <code>org.apache.ibatis.datasource.unpooled.UnpooledDataSourceFactory</code> can be used as super class
-		  class to build new datasource adapters. For example this is the code needed to plug C3P0:  
-		</p>
-
-        <source><![CDATA[import org.apache.ibatis.datasource.unpooled.UnpooledDataSourceFactory;
-import com.mchange.v2.c3p0.ComboPooledDataSource;
-        
-public class C3P0DataSourceFactory extends UnpooledDataSourceFactory {
-
-  public C3P0DataSourceFactory() {
-    this.dataSource = new ComboPooledDataSource();
-  }
-}]]></source>
-
-        <p>To set it up, add a property for each setter method you want MyBatis to call. 
-        Follows below a sample configuration which connects to a PostgreSQL database:</p>        
-
-        <source><![CDATA[<dataSource type="org.myproject.C3P0DataSourceFactory">
-  <property name="driver" value="org.postgresql.Driver"/>
-  <property name="url" value="jdbc:postgresql:mydb"/>
-  <property name="username" value="postgres"/>
-  <property name="password" value="root"/>
-</dataSource>
-]]></source>
-        
       </subsection>
 
       <subsection name="databaseIdProvider">
@@ -1732,10 +1695,10 @@ public class C3P0DataSourceFactory extends UnpooledDataSourceFactory {
 ]]></source>
 
 		<p>
-		  The DB_VENDOR implementation databaseIdProvider sets as databaseId the String returned by
+		  The DB_VENDOR implementation databaseIdProvider sets as a databaseId the String returned by
 		  <code>DatabaseMetaData#getDatabaseProductName()</code>.
-		  Given that usually that string is too long and that different versions of the same product may return different values,
-		  you may want to convert it to a shorter one by adding properties like follows:
+		  As usually that string is too long and also, different versions of the same product return different values,
+		  so you may want to translate it to a shorter one by adding properties like follows:
 		</p>
 
         <source><![CDATA[<databaseIdProvider type="DB_VENDOR">
@@ -1756,7 +1719,9 @@ public class C3P0DataSourceFactory extends UnpooledDataSourceFactory {
 		</p>
 
         <source><![CDATA[public interface DatabaseIdProvider {
+
   void setProperties(Properties p);
+
   String getDatabaseId(DataSource dataSource) throws SQLException;
 }]]></source>
 
@@ -1768,11 +1733,14 @@ public class C3P0DataSourceFactory extends UnpooledDataSourceFactory {
           configuration elements, we’re ready to define our mapped SQL
           statements. But first, we need to tell MyBatis where to find them.
           Java doesn’t really provide any good means of auto-discovery in
-          this regard, so the best way to do it is to simply tell MyBatis
-          where to find the mapping files. You can use class path relative
-          resource references, fully qualified url references
-          (including <code>file:///</code> URLs), class names or package names. 
-          For example:
+          this
+          regard, so the best way to do it is to simply tell MyBatis
+          where to
+          find the mapping files. You can use class path relative
+          resource
+          references, or literal, fully qualified url references
+          (including
+          <code>file:///</code> URLs). For example:
         </p>
         <source><![CDATA[<!-- Using classpath relative resources -->
 <mappers>
@@ -1802,7 +1770,8 @@ public class C3P0DataSourceFactory extends UnpooledDataSourceFactory {
 
         <p>
           These statement simply tell MyBatis where to go from here. The
-          rest of the details are in each of the SQL Mapping files, and that’s
+          rest of
+          the details are in each of the SQL Mapping files, and that’s
           exactly what the next section will discuss.
         </p>
       </subsection>

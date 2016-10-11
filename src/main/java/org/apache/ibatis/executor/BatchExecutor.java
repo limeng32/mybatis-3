@@ -1,5 +1,5 @@
 /*
- *    Copyright 2009-2014 the original author or authors.
+ *    Copyright 2009-2012 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.apache.ibatis.executor.keygen.Jdbc3KeyGenerator;
 import org.apache.ibatis.executor.keygen.KeyGenerator;
-import org.apache.ibatis.executor.keygen.NoKeyGenerator;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -34,9 +33,6 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.transaction.Transaction;
 
-/**
- * @author Jeff Butler 
- */
 public class BatchExecutor extends BaseExecutor {
 
   public static final int BATCH_UPDATE_RETURN_VALUE = Integer.MIN_VALUE + 1002;
@@ -80,7 +76,7 @@ public class BatchExecutor extends BaseExecutor {
     try {
       flushStatements();
       Configuration configuration = ms.getConfiguration();
-      StatementHandler handler = configuration.newStatementHandler(wrapper, ms, parameterObject, rowBounds, resultHandler, boundSql);
+      StatementHandler handler = configuration.newStatementHandler(this, ms, parameterObject, rowBounds, resultHandler, boundSql);
       Connection connection = getConnection(ms.getStatementLog());
       stmt = handler.prepare(connection);
       handler.parameterize(stmt);
@@ -104,10 +100,10 @@ public class BatchExecutor extends BaseExecutor {
             MappedStatement ms = batchResult.getMappedStatement();
             List<Object> parameterObjects = batchResult.getParameterObjects();
             KeyGenerator keyGenerator = ms.getKeyGenerator();
-            if (Jdbc3KeyGenerator.class.equals(keyGenerator.getClass())) {
+            if (keyGenerator instanceof Jdbc3KeyGenerator) {
               Jdbc3KeyGenerator jdbc3KeyGenerator = (Jdbc3KeyGenerator) keyGenerator;
               jdbc3KeyGenerator.processBatch(ms, stmt, parameterObjects);
-            } else if (!NoKeyGenerator.class.equals(keyGenerator.getClass())) { //issue #141
+            } else {
               for (Object parameter : parameterObjects) {
                 keyGenerator.processAfter(this, ms, stmt, parameter);
               }

@@ -15,6 +15,6 @@
  */
 
 /**
- * Contains cache decorators
+ * TODO fillme.
  */
 package org.apache.ibatis.cache.decorators;

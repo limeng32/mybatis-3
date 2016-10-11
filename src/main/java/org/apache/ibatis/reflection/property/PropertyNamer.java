@@ -19,9 +19,6 @@ import java.util.Locale;
 
 import org.apache.ibatis.reflection.ReflectionException;
 
-/**
- * @author Clinton Begin
- */
 public class PropertyNamer {
 
   public static String methodToProperty(String name) {

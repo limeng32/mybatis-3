@@ -1,5 +1,5 @@
 /*
- *    Copyright 2009-2014 the original author or authors.
+ *    Copyright 2009-2012 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -31,18 +31,21 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.transaction.Transaction;
 
-/**
- * @author Clinton Begin
- * @author Eduardo Macarron
- */
 public class CachingExecutor implements Executor {
 
   private Executor delegate;
+  private boolean autoCommit; // issue #573. No need to call commit() on autoCommit sessions
   private TransactionalCacheManager tcm = new TransactionalCacheManager();
 
+  private boolean dirty;
+
   public CachingExecutor(Executor delegate) {
+    this(delegate, false);
+  }
+
+  public CachingExecutor(Executor delegate, boolean autoCommit) {
     this.delegate = delegate;
-    delegate.setExecutorWrapper(this);
+    this.autoCommit = autoCommit;
   }
 
   public Transaction getTransaction() {
@@ -51,8 +54,9 @@ public class CachingExecutor implements Executor {
 
   public void close(boolean forceRollback) {
     try {
-      //issues #499, #524 and #573
-      if (forceRollback) { 
+      //issue #499. Unresolved session handling
+      //issue #573. Autocommit sessions should commit
+      if (dirty && !autoCommit) { 
         tcm.rollback();
       } else {
         tcm.commit();
@@ -77,26 +81,28 @@ public class CachingExecutor implements Executor {
     return query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
   }
 
-  public <E> List<E> query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql)
-      throws SQLException {
+  public <E> List<E> query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException {
     Cache cache = ms.getCache();
     if (cache != null) {
       flushCacheIfRequired(ms);
-      if (ms.isUseCache() && resultHandler == null) {
+      if (ms.isUseCache() && resultHandler == null) { 
         ensureNoOutParams(ms, parameterObject, boundSql);
-        @SuppressWarnings("unchecked")
-        List<E> list = (List<E>) tcm.getObject(cache, key);
-        if (list == null) {
+        if (!dirty) {
+          cache.getReadWriteLock().readLock().lock();
           try {
-            list = delegate.<E> query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+            @SuppressWarnings("unchecked")
+            List<E> cachedList = (List<E>) cache.getObject(key);
+            if (cachedList != null) return cachedList;
           } finally {
-            tcm.putObject(cache, key, list); // issue #578 and #116
+            cache.getReadWriteLock().readLock().unlock();
           }
         }
+        List<E> list = delegate.<E> query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+        tcm.putObject(cache, key, list); // issue #578. Query must be not synchronized to prevent deadlocks
         return list;
       }
     }
-    return delegate.<E> query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+    return delegate.<E>query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
   }
 
   public List<BatchResult> flushStatements() throws SQLException {
@@ -106,11 +112,13 @@ public class CachingExecutor implements Executor {
   public void commit(boolean required) throws SQLException {
     delegate.commit(required);
     tcm.commit();
+    dirty = false;
   }
 
   public void rollback(boolean required) throws SQLException {
     try {
       delegate.rollback(required);
+      dirty = false;
     } finally {
       if (required) {
         tcm.rollback();
@@ -133,11 +141,11 @@ public class CachingExecutor implements Executor {
   }
 
   public boolean isCached(MappedStatement ms, CacheKey key) {
-    return delegate.isCached(ms, key);
+    throw new UnsupportedOperationException("The CachingExecutor should not be used by result loaders and thus isCached() should never be called.");
   }
 
   public void deferLoad(MappedStatement ms, MetaObject resultObject, String property, CacheKey key, Class<?> targetType) {
-    delegate.deferLoad(ms, resultObject, property, key, targetType);
+    throw new UnsupportedOperationException("The CachingExecutor should not be used by result loaders and thus deferLoad() should never be called.");
   }
 
   public void clearLocalCache() {
@@ -146,14 +154,10 @@ public class CachingExecutor implements Executor {
 
   private void flushCacheIfRequired(MappedStatement ms) {
     Cache cache = ms.getCache();
-    if (cache != null && ms.isFlushCacheRequired()) {      
+    if (cache != null && ms.isFlushCacheRequired()) {
+      dirty = true; // issue #524. Disable using cached data for this session
       tcm.clear(cache);
     }
-  }
-
-  @Override
-  public void setExecutorWrapper(Executor executor) {
-    throw new UnsupportedOperationException("This method should not be called");
   }
 
 }

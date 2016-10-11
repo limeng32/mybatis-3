@@ -15,6 +15,6 @@
  */
 
 /**
- * Simple single-thread pooled datasource
+ * TODO fillme.
  */
 package org.apache.ibatis.datasource.pooled;

@@ -24,9 +24,6 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.util.Properties;
 
-/**
- * @author Clinton Begin
- */
 public class ExternalResources {
 
   private ExternalResources() {

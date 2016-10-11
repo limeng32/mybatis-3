@@ -15,6 +15,6 @@
  */
 
 /**
- * Contains the result handlers.
+ * TODO fillme.
  */
 package org.apache.ibatis.executor.result;

@@ -18,7 +18,6 @@ package org.apache.ibatis.scripting.xmltags;
 import java.util.HashMap;
 import java.util.Map;
 
-import ognl.OgnlContext;
 import ognl.OgnlException;
 import ognl.OgnlRuntime;
 import ognl.PropertyAccessor;
@@ -26,9 +25,6 @@ import ognl.PropertyAccessor;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.session.Configuration;
 
-/**
- * @author Clinton Begin
- */
 public class DynamicContext {
 
   public static final String PARAMETER_OBJECT_KEY = "_parameter";
@@ -131,16 +127,6 @@ public class DynamicContext {
         throws OgnlException {
       Map map = (Map) target;
       map.put(name, value);
-    }
-
-    @Override
-    public String getSourceAccessor(OgnlContext arg0, Object arg1, Object arg2) {
-      return null;
-    }
-
-    @Override
-    public String getSourceSetter(OgnlContext arg0, Object arg1, Object arg2) {
-      return null;
     }
   }
 }

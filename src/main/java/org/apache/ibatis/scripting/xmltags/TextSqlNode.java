@@ -15,27 +15,15 @@
  */
 package org.apache.ibatis.scripting.xmltags;
 
-import java.util.regex.Pattern;
-
 import org.apache.ibatis.parsing.GenericTokenParser;
 import org.apache.ibatis.parsing.TokenHandler;
-import org.apache.ibatis.scripting.ScriptingException;
 import org.apache.ibatis.type.SimpleTypeRegistry;
 
-/**
- * @author Clinton Begin
- */
 public class TextSqlNode implements SqlNode {
   private String text;
-  private Pattern injectionFilter;
 
   public TextSqlNode(String text) {
-    this(text, null);
-  }
-  
-  public TextSqlNode(String text, Pattern injectionFilter) {
     this.text = text;
-    this.injectionFilter = injectionFilter;
   }
   
   public boolean isDynamic() {
@@ -46,7 +34,7 @@ public class TextSqlNode implements SqlNode {
   }
 
   public boolean apply(DynamicContext context) {
-    GenericTokenParser parser = createParser(new BindingTokenParser(context, injectionFilter));
+    GenericTokenParser parser = createParser(new BindingTokenParser(context));
     context.appendSql(parser.parse(text));
     return true;
   }
@@ -58,11 +46,9 @@ public class TextSqlNode implements SqlNode {
   private static class BindingTokenParser implements TokenHandler {
 
     private DynamicContext context;
-    private Pattern injectionFilter;
 
-    public BindingTokenParser(DynamicContext context, Pattern injectionFilter) {
+    public BindingTokenParser(DynamicContext context) {
       this.context = context;
-      this.injectionFilter = injectionFilter;
     }
 
     public String handleToken(String content) {
@@ -73,18 +59,10 @@ public class TextSqlNode implements SqlNode {
         context.getBindings().put("value", parameter);
       }
       Object value = OgnlCache.getValue(content, context.getBindings());
-      String srtValue = (value == null ? "" : String.valueOf(value)); // issue #274 return "" instead of "null"
-      checkInjection(srtValue);
-      return srtValue;
-    }
-
-    private void checkInjection(String value) {
-      if (injectionFilter != null && !injectionFilter.matcher(value).matches()) {
-        throw new ScriptingException("Invalid input. Please conform to regex" + injectionFilter.pattern());
-      }
+      return (value == null ? "" : String.valueOf(value)); // issue #274 return "" instead of "null"
     }
   }
-  
+
   private static class DynamicCheckerTokenParser implements TokenHandler {
     
     private boolean isDynamic;

@@ -18,9 +18,6 @@ package org.apache.ibatis.reflection.wrapper;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.ReflectionException;
 
-/**
- * @author Clinton Begin
- */
 public class DefaultObjectWrapperFactory implements ObjectWrapperFactory {
 
   public boolean hasWrapperFor(Object object) {

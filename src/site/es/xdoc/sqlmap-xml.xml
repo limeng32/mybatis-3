@@ -276,18 +276,18 @@ ps.setInt(1,id);]]></source>
             </tr>
             <tr>
               <td><code>useGeneratedKeys</code></td>
-              <td>(solo en insert y update) Indica a MyBatis que utilice el método getGeneratedKeys de JDBC para recuperar las claves autogeneras automáticamente por la base de datos. (ej. campos autoincrementales en SGBD como MySQL o SQL Server).  Por defecto:  false
+              <td>(solo en insert) Indica a MyBatis que utilice el método getGeneratedKeys de JDBC para recuperar las claves autogeneras automáticamente por la base de datos. (ej. campos autoincrementales en SGBD como MySQL o SQL Server).  Por defecto:  false
               </td>
             </tr>
             <tr>
               <td><code>keyProperty</code></td>
-              <td>(solo en insert y update) Indica la propiedad a la que MyBatis debe asignar la clave autogenerada devuelva por getGeneratedKeys o por un elemento hijo de tipo selectKey. Por defecto: no informado. Puede contener una lista de nombres seperados por comas en el caso de que se esperen varios valores autogenerados.
+              <td>(solo en insert) Indica la propiedad a la que MyBatis debe asignar la clave autogenerada devuelva por getGeneratedKeys o por un elemento hijo de tipo selectKey. Por defecto: no informado.
               </td>
             </tr>
             <tr>
               <td><code>keyColumn</code></td>
-              <td>(solo en insert y update) Indica el nombre de la columna en tabla con clave generada. Solo se requiere en algunas bases de datos (como PostgreSQL) donde la 
-              columna clave no es la primera de la tabla. Puede contener una lista de nombres seperados por comas en el caso de que se esperen varios valores autogenerados.
+              <td>(solo en insert) Indica el nombre de la columna en tabla con clave generada. Solo se requiere en algunas bases de datos (como PostgreSQL) donde la 
+              columna clave no es la primera de la tabla.
               </td>
             </tr>
             <tr>
@@ -369,13 +369,7 @@ Por ejemplo, si la columna id de la tabla Author del ejemplo siguiente fuera aut
           <tbody>
             <tr>
               <td><code>keyProperty</code></td>
-              <td>La propiedad destino con la que debe informarse el resultado del selectKey statement. Puede contener una lista de nombres seperados por comas en el caso de que se esperen varios valores autogenerados.
-              </td>
-            </tr>
-            <tr>
-              <td><code>keyColumn</code></td>
-              <td>Los nombres de columnas en el ResultSet que corresponden con las propiedades. Puede contener una lista de nombres seperados por comas en el caso de que se esperen varios valores autogenerados. 
-              </td>
+              <td>La propiedad destino con la que debe informarse el resultado del selectKey statement.</td>
             </tr>
             <tr>
               <td><code>resultType</code></td>
@@ -999,13 +993,6 @@ public class User {
             <tr>
               <td><code>select</code></td>
               <td>El id de otro mapped statement que cargará el tipo complejo asociado a esta propiedad. Los valores obtenidos de las columnas especificadas en el atributo column se pasarán como parámetros al select  statement referenciado. A continuación se muestra un ejemplo detallado. Nota: para tratar con claves compuestas, puedes especificar varios nombres usando esta sintaxis column=”{prop1=col1,prop2=col2}”. Esto hará que se informen las propiedades prop1 y prop2 del objeto parámetro del select statement destino
-              </td>
-            </tr>
-            <tr>
-              <td><code>fetchType</code></td>
-              <td>
-                Opcional. Los valores válidos son <code>lazy</code> y <code>eager</code>. Si está presente sobrescribe
-                el parámetro global de configuración <code>lazyLoadingEnabled</code> para este mapping.
               </td>
             </tr>
           </tbody>
@@ -1670,6 +1657,7 @@ SELECT * FROM POST WHERE BLOG_ID = #{id}]]></source>
   boolean hasKey(Object key);
   Object removeObject(Object key);
   void clear();
+  ReadWriteLock getReadWriteLock();
 }]]></source>
 
         <p>Para configurar tu caché añade simplemente propiedades tipo JavaBean a tu implementación, y pasa las propiedades usando el elemento cache, por ejemplo el siguiente ejemplo llamará a un método “setCacheFile(String file)” en tu implementación de caché:

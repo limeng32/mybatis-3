@@ -15,6 +15,6 @@
  */
 
 /**
- * Base package for transactions.
+ * TODO fillme.
  */
 package org.apache.ibatis.transaction;
