@@ -12,6 +12,10 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
+ *    
+ *    本类由limeng32进行了修改，作用为增强mybatis对enum类型属性的映射效果。
+ *    如有使用上的疑问请在 https://github.com/limeng32 上给作者发短消息或在作者的个人网站 limeng32.com 上留言。
+ *    祝商祺。
  */
 package org.apache.ibatis.type;
 
@@ -27,6 +31,9 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import limeng32.mybatis.accessory.AdvancedEnumTypeFace;
+import limeng32.mybatis.accessory.AdvancedEnumTypeHandler;
 
 import org.apache.ibatis.io.ResolverUtil;
 
@@ -185,9 +192,16 @@ public final class TypeHandlerRegistry {
         handler = jdbcHandlerMap.get(null);
       }
     }
-    if (handler == null && type != null && type instanceof Class && Enum.class.isAssignableFrom((Class<?>) type)) {
-      handler = new EnumTypeHandler((Class<?>) type);
-    }
+    /** 以下内容由limeng32进行修改，增加了AdvancedEnumTypeHandler的注册 */
+	if (handler == null && type != null && type instanceof Class
+			&& Enum.class.isAssignableFrom((Class<?>) type)) {
+		if (AdvancedEnumTypeFace.class.isAssignableFrom((Class<?>) type)) {
+			handler = new AdvancedEnumTypeHandler((Class<?>) type);
+		} else {
+			handler = new EnumTypeHandler((Class<?>) type);
+		}
+	}
+	/** 修改结束 */
     @SuppressWarnings("unchecked")
     // type drives generics here
     TypeHandler<T> returned = (TypeHandler<T>) handler;

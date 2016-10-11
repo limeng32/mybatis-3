@@ -23,8 +23,8 @@
     <version>21</version>
   </parent>
 
-  <artifactId>mybatis</artifactId>
-  <version>3.2.5</version>
+  <artifactId>mybatis-by-limeng32</artifactId>
+  <version>3.2.5.0</version>
   <packaging>jar</packaging>
 
   <name>MyBatis</name>
